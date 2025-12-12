@@ -58,9 +58,13 @@ export const AuthProvider = ({ children }) => {
         toast.success('Logged out');
     };
 
+    if (loading) {
+        return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    }
+
     return (
         <AuthContext.Provider value={{ user, login, register, logout, loading }}>
-            {!loading && children}
+            {children}
         </AuthContext.Provider>
     );
 };
