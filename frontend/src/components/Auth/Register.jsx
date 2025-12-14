@@ -22,7 +22,7 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords don't match"); // Or use toast
+            alert("Passwords don't match");
             return;
         }
 
@@ -36,90 +36,113 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
-                <div>
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Create your account
+        <div className="page-container">
+            <div className="max-w-md w-full glass-card p-10 animate-slide-up">
+                <div className="text-center mb-10">
+                    <div className="mx-auto h-12 w-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center mb-4 transform rotate-3 hover:rotate-6 transition-transform">
+                        <User className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+                        Create Account
                     </h2>
+                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                        Join PrimeTrade AI today
+                    </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div className="relative">
-                            <User className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    <div className="space-y-5">
+                        <div className="relative group">
+                            <User className="input-icon peer" />
                             <input
                                 name="name"
                                 type="text"
                                 required
-                                className="appearance-none rounded-none rounded-t-md relative block w-full px-10 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="modern-input modern-input-with-icon peer"
                                 placeholder="Full Name"
                                 value={formData.name}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="relative">
-                            <Mail className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+                        <div className="relative group">
+                            <Mail className="input-icon peer" />
                             <input
                                 name="email"
                                 type="email"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-10 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="modern-input modern-input-with-icon peer"
                                 placeholder="Email address"
                                 value={formData.email}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="relative">
-                            <Lock className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+                        <div className="relative group">
+                            <Lock className="input-icon peer" />
                             <input
                                 name="password"
                                 type="password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-10 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="modern-input modern-input-with-icon peer"
                                 placeholder="Password"
                                 value={formData.password}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="relative">
-                            <Lock className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+                        <div className="relative group">
+                            <Lock className="input-icon peer" />
                             <input
                                 name="confirmPassword"
                                 type="password"
                                 required
-                                className="appearance-none rounded-none relative block w-full px-10 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="modern-input modern-input-with-icon peer"
                                 placeholder="Confirm Password"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                             />
                         </div>
-                        <div className="relative">
-                            <Shield className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+
+                        <div className="relative group">
+                            <Shield className="input-icon peer" />
                             <select
                                 name="role"
-                                className="appearance-none rounded-none rounded-b-md relative block w-full px-10 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="modern-input modern-input-with-icon peer appearance-none cursor-pointer"
                                 value={formData.role}
                                 onChange={handleChange}
                             >
                                 <option value="user">User</option>
                                 <option value="admin">Admin</option>
                             </select>
+                            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                        >
-                            {isSubmitting ? 'Registering...' : 'Register'}
-                        </button>
-                    </div>
-                    <div className="text-center">
-                        <Link to="/login" className="text-sm text-indigo-600 hover:text-indigo-500">
-                            Already have an account? Sign in
-                        </Link>
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="btn-primary"
+                    >
+                        {isSubmitting ? (
+                            <span className="flex items-center">
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Registering...
+                            </span>
+                        ) : 'Create Account'}
+                    </button>
+
+                    <div className="text-center mt-6">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Already have an account?{' '}
+                            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 transition-colors">
+                                Sign in
+                            </Link>
+                        </p>
                     </div>
                 </form>
             </div>
