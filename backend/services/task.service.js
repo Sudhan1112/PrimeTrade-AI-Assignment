@@ -1,118 +1,129 @@
-import { supabase } from '../config/supabase.js';
+
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const DATA_FILE = path.join(__dirname, '../data/tasks.json');
+
+// Ensure data directory exists
+const initialize = async () => {
+    try {
+        await fs.mkdir(path.dirname(DATA_FILE), { recursive: true });
+        try {
+            await fs.access(DATA_FILE);
+        } catch {
+            await fs.writeFile(DATA_FILE, JSON.stringify([]));
+        }
+    } catch (err) {
+        console.error('Failed to initialize mock DB', err);
+    }
+};
+
+initialize();
 
 class TaskService {
-    async createTask(taskData) {
-        // taskData: { user_id, title, description, status, priority }
-        // Note: We use the system 'supabase' client which respects RLS if we set the session, 
-        // OR we can manually enforce user_id here if we trust the API layer.
-        // Given we are using Custom JWT, we can't easily injection session into 'supabase' global client safely for concurrency.
-        // SO: We will INSERT using the Service Key client (admin) BUT validate ownership/permissions in Controller/Service
-        // OR: We create a scoped client for the user.
-        // DECISION: Since creating a fresh client is expensive-ish, and we are doing a Node API:
-        // We will use the ADMIN client to perform operations, but we MUST MANUALLY ensure the 'user_id' matches the authenticated user.
-
-        // Actually, safest is to use the `user_id` from the token as the Foreign Key.
-
-        const { data, error } = await supabase
-            .from('tasks')
-            .insert(taskData)
-            .select()
-            .single();
-
-        if (error) throw error;
-        return data;
+    async _readTasks() {
+        try {
+            const data = await fs.readFile(DATA_FILE, 'utf8');
+            return JSON.parse(data);
+        } catch (err) {
+            return [];
+        }
     }
 
-    async getAllTasks(filter, pagination) {
+    async _writeTasks(tasks) {
+        await fs.writeFile(DATA_FILE, JSON.stringify(tasks, null, 2));
+    }
+
+    async createTask(taskData) {
+        const tasks = await this._readTasks();
+        const newTask = {
+            id: crypto.randomUUID(),
+            ...taskData,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        tasks.push(newTask);
+        await this._writeTasks(tasks);
+        return newTask;
+    }
+
+    async getAllTasks(filter) {
         const { page, limit, status, priority, sort, userId, role } = filter;
+        let tasks = await this._readTasks();
 
-        let query = supabase
-            .from('tasks')
-            .select('*', { count: 'exact' });
-
-        // FILTERING
-        // If role is 'user', enforce fetching only their tasks
+        // Filter by User
         if (role !== 'admin') {
-            query = query.eq('user_id', userId);
-        }
-        // If Admin, they can see all.
-
-        if (status) query = query.eq('status', status);
-        if (priority) query = query.eq('priority', priority);
-
-        // SORTING
-        if (sort) {
-            // e.g. 'created_at' (desc is default requirement)
-            query = query.order(sort, { ascending: false });
-        } else {
-            query = query.order('created_at', { ascending: false });
+            tasks = tasks.filter(t => t.user_id === userId);
         }
 
-        // PAGINATION
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-        query = query.range(from, to);
+        // Filter by Status/Priority
+        if (status) tasks = tasks.filter(t => t.status === status);
+        if (priority) tasks = tasks.filter(t => t.priority === priority);
 
-        const { data, error, count } = await query;
-        if (error) throw error;
+        // Sort
+        tasks.sort((a, b) => {
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            return sort === 'created_at' ? dateB - dateA : dateB - dateA; // Default Desc
+        });
 
-        return { tasks: data, count };
+        const total = tasks.length;
+
+        // Pagination
+        const start = (page - 1) * limit;
+        const end = start + limit;
+        const paginatedTasks = tasks.slice(start, end);
+
+        return { tasks: paginatedTasks, count: total };
     }
 
     async getTaskById(id) {
-        const { data, error } = await supabase
-            .from('tasks')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-        if (error) throw error;
-        return data;
+        const tasks = await this._readTasks();
+        return tasks.find(t => t.id === id);
     }
 
     async updateTask(id, updates) {
-        const { data, error } = await supabase
-            .from('tasks')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+        const tasks = await this._readTasks();
+        const index = tasks.findIndex(t => t.id === id);
+        if (index === -1) throw new Error('Task not found');
 
-        if (error) throw error;
-        return data;
+        const updatedTask = {
+            ...tasks[index],
+            ...updates,
+            updated_at: new Date().toISOString()
+        };
+
+        tasks[index] = updatedTask;
+        await this._writeTasks(tasks);
+        return updatedTask;
     }
 
     async deleteTask(id) {
-        const { error } = await supabase
-            .from('tasks')
-            .delete()
-            .eq('id', id);
+        let tasks = await this._readTasks();
+        const initialLength = tasks.length;
+        tasks = tasks.filter(t => t.id !== id);
 
-        if (error) throw error;
+        if (tasks.length === initialLength) throw new Error('Task not found');
+
+        await this._writeTasks(tasks);
         return true;
     }
 
     async getStats(userId, role) {
-        // Helper to get counts by status
-        // If user, filter by user_id
-        let query = supabase.from('tasks').select('status, id');
-
+        let tasks = await this._readTasks();
         if (role !== 'admin') {
-            query = query.eq('user_id', userId);
+            tasks = tasks.filter(t => t.user_id === userId);
         }
 
-        const { data, error } = await query;
-        if (error) throw error;
-
-        // Aggregate in memory (efficient enough for intern task scale)
-        // Or use .rpc() for performance if needed
-        const stats = {
-            total: data.length,
-            pending: data.filter(t => t.status === 'pending').length,
-            in_progress: data.filter(t => t.status === 'in_progress').length,
-            completed: data.filter(t => t.status === 'completed').length,
+        return {
+            total: tasks.length,
+            pending: tasks.filter(t => t.status === 'pending').length,
+            in_progress: tasks.filter(t => t.status === 'in_progress').length,
+            completed: tasks.filter(t => t.status === 'completed').length,
         };
-        return stats;
     }
 }
 

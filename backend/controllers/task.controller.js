@@ -7,6 +7,8 @@ export const createTask = async (req, res, next) => {
 
         const taskData = {
             user_id: req.user.id, // Enforce owner
+            user_name: req.user.name,
+            user_email: req.user.email,
             title,
             description,
             priority: priority || 'medium',
@@ -83,11 +85,20 @@ export const updateTask = async (req, res, next) => {
             return errorResponse(res, 403, 'Forbidden: You cannot update this task');
         }
 
-        // Sanitize updates (prevent changing user_id or id)
+        // Sanitize updates
+        // Prevent changing id
         delete updates.id;
-        delete updates.user_id;
         delete updates.created_at;
-        // updated_at is handled by DB trigger
+
+        // Only Admin can reassign
+        if (req.user.role !== 'admin') {
+            delete updates.user_id;
+            delete updates.user_name;
+            delete updates.user_email;
+        } else if (updates.user_id) {
+            // If admin is reassigning, ensure name/email are provided or handled?
+            // Ideally frontend sends user_id, user_name, user_email together.
+        }
 
         const updatedTask = await taskService.updateTask(id, updates);
         successResponse(res, 'Task updated successfully', { task: updatedTask });
