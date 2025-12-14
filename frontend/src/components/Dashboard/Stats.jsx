@@ -2,16 +2,16 @@ import React from 'react';
 import { CheckCircle, Clock, AlertCircle, List } from 'lucide-react';
 
 const StatsCard = ({ title, count, icon: Icon, color }) => (
-    <div className="bg-white overflow-hidden shadow rounded-lg">
+    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg transform transition-all duration-300 hover:scale-105 hover:shadow-lg dark:border dark:border-gray-700">
         <div className="p-5">
             <div className="flex items-center">
-                <div className={`flex-shrink-0 p-3 rounded-md ${color}`}>
+                <div className={`flex-shrink-0 p-3 rounded-md ${color} shadow-lg`}>
                     <Icon className="h-6 w-6 text-white" />
                 </div>
                 <div className="ml-5 w-0 flex-1">
                     <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">{title}</dt>
-                        <dd className="text-3xl font-semibold text-gray-900">{count}</dd>
+                        <dt className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{title}</dt>
+                        <dd className="text-3xl font-bold text-gray-900 dark:text-white">{count}</dd>
                     </dl>
                 </div>
             </div>
