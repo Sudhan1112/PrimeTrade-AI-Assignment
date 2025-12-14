@@ -1,1 +1,108 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --animate-fade-in: fadeIn 0.5s ease-out;
+    --animate-slide-up: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    --animate-scale-in: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0.95);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+}
+
+@layer base {
+    body {
+        @apply transition-colors duration-300 ease-in-out bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    }
+
+    /* Smooth transitions */
+    button,
+    a,
+    input,
+    select,
+    textarea,
+    div,
+    tr,
+    td,
+    nav {
+        @apply transition-all duration-300 ease-in-out;
+    }
+}
+
+@layer components {
+
+    /* Glassmorphism Card */
+    .glass-card {
+        @apply bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-gray-200 dark:border-gray-700 shadow-xl rounded-2xl;
+    }
+
+    /* Modern Primary Button */
+    .btn-primary {
+        @apply w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed dark:from-indigo-500 dark:to-violet-500;
+    }
+
+    /* Modern Icon Button */
+    .btn-icon {
+        @apply p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 hover:scale-110 active:scale-90 transition-all text-gray-500 dark:text-gray-400;
+    }
+
+    /* Modern Input Field */
+    .input-group {
+        @apply relative mb-6;
+    }
+
+    .modern-input {
+        @apply block w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-300 ease-out hover:border-gray-400 dark:hover:border-gray-500;
+    }
+
+    .modern-input-with-icon {
+        @apply pl-11;
+    }
+
+    .input-icon {
+        @apply absolute top-3.5 left-3.5 h-5 w-5 text-gray-400 peer-focus:text-indigo-500 transition-colors duration-300;
+    }
+
+    .modern-label {
+        @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5 ml-1;
+    }
+
+    /* Page Container */
+    .page-container {
+        @apply min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300;
+        @apply from-indigo-100 via-gray-50 to-gray-50 dark:from-gray-800 dark:via-gray-900 dark:to-black;
+        background-image: radial-gradient(ellipse at top, var(--tw-gradient-stops));
+    }
+}
