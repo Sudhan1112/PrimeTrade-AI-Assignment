@@ -49,22 +49,24 @@ export const login = async (req, res, next) => {
         // 1. Login with Supabase
         const { user, session } = await authService.login(email, password);
 
-        // 2. Get detailed profile (including role) from our 'profiles' table
-        const profile = await authService.getProfile(user.id);
+        // 2. Fallback: Get profile info from user_metadata (since profiles table might be missing)
+        const name = user.user_metadata?.name || 'User';
+        const role = user.user_metadata?.role || 'user';
 
         // 3. Generate Custom JWT
         const token = generateToken({
             id: user.id,
             email: user.email,
-            role: profile.role
+            role: role,
+            name: name // Add name to token for convenience
         });
 
         successResponse(res, 'Login successful', {
             user: {
                 id: user.id,
-                name: profile.name,
+                name: name,
                 email: user.email,
-                role: profile.role
+                role: role
             },
             token,
             expiresIn: process.env.JWT_EXPIRES_IN || '24h'
@@ -91,7 +93,10 @@ export const logout = async (req, res, next) => {
 
 export const getCurrentUser = async (req, res, next) => {
     try {
-        const user = await authService.getProfile(req.user.id); // req.user set by auth middleware
+        // req.user is set by auth middleware from verifying the token.
+        // It should contain: id, email, role, and now 'name' (if we added it to token).
+        // If name is missing in token (old tokens), we might return generic.
+        const user = req.user;
         successResponse(res, 'Profile retrieved', { user });
     } catch (error) {
         next(error);
@@ -133,6 +138,19 @@ export const refreshToken = async (req, res, next) => {
 
         successResponse(res, 'Token refreshed', { token });
 
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const getAllUsers = async (req, res, next) => {
+    try {
+        // Only Admin
+        if (req.user.role !== 'admin') {
+            return errorResponse(res, 403, 'Access denied');
+        }
+        const users = await authService.listUsers();
+        successResponse(res, 'Users retrieved', { users });
     } catch (error) {
         next(error);
     }
