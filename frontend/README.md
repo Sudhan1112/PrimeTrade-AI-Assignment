@@ -1,16 +1,71 @@
-# React + Vite
+# PrimeTrade AI Frontend Assignment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the client-side application for the PrimeTrade AI Backend Intern assignment. It is a React-based UI that interacts with the backend REST API to demonstrate authentication (JWT) and Task CRUD operations.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Authentication**: Login and Register pages with error handling.
+- **Protected Routes**: Dashboard access is restricted to authenticated users.
+- **Dashboard**:
+  - View list of tasks.
+  - specific "Create Task" button/modal.
+  - Edit and Delete functionality.
+- **UI/UX**: 
+  - Built with **TailwindCSS** for styling.
+  - Responsive design.
+  - **React Hot Toast** for notifications.
 
-## React Compiler
+## 🛠 Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework**: React.js (Vite)
+- **Styling**: TailwindCSS
+- **State Management**: Context API (AuthContext)
+- **Routing**: React Router DOM
+- **HTTP Client**: Fetch API / Axios (if applicable)
 
-## Expanding the ESLint configuration
+## 📂 Project Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── Auth/       # Login, Register
+│   │   ├── Dashboard/  # Main Dashboard View
+│   │   ├── Common/     # Navbar, ProtectedRoute
+│   │   └── Tasks/      # Task CRUD components
+│   ├── context/        # Auth & Theme Context
+│   ├── services/       # API integration
+│   ├── App.jsx         # Main Router
+│   └── main.jsx        # Entry point
+└── ...
+```
+
+## ⚙️ Setup & Installation
+
+1.  **Navigate to the frontend directory:**
+    ```bash
+    cd frontend
+    ```
+
+2.  **Install Dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Setup:**
+    Create a `.env` file (or use default) if you need to change the backend URL.
+    ```env
+    VITE_API_URL=http://localhost:5000/api/v1
+    ```
+
+4.  **Run the Development Server:**
+    ```bash
+    npm run dev
+    ```
+
+5.  **Open in Browser:**
+    Go to `http://localhost:5173`
+
+## 🔗 Connection
+
+Ensure the [Backend](../backend) server is running on port 5000 before interacting with the application.
