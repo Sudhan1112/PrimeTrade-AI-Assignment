@@ -55,7 +55,7 @@ frontend/
 3.  **Environment Setup:**
     Create a `.env` file (or use default) if you need to change the backend URL.
     ```env
-    VITE_API_URL=http://localhost:5000/api/v1
+    VITE_API_URL=https://primetrade-ai-assignment-1-er4l.onrender.com/api/v1
     ```
 
 4.  **Run the Development Server:**

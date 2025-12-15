@@ -226,7 +226,7 @@
     "variable": [
         {
             "key": "baseUrl",
-            "value": "http://localhost:5000/api/v1",
+            "value": "https://primetrade-ai-assignment-1-er4l.onrender.com/api/v1",
             "type": "string"
         }
     ]

@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:5000/api/v1';
+export const API_URL = 'https://primetrade-ai-assignment-1-er4l.onrender.com/api/v1';
 
 export const USER_ROLES = {
     ADMIN: 'admin',
